@@ -1,26 +1,34 @@
 import { create } from "zustand";
 
-type Task = {
+export type TaskProps = {
  id: string;
  title: string;
  subtitle: string;
  isCompleted: boolean;
 };
 
-type TaskStore = {
- tasks: Task[];
+export type TaskStore = {
+ tasks: TaskProps[];
  onSearch: (query: string) => void;
- addTask: (task: Task) => void;
+ addTask: (task: TaskProps) => void;
  removeTask: (id: string) => void;
- updateTask: (task: Task) => void;
+ updateTask: (task: TaskProps) => void;
 };
 
 export const useTaskStore = create<TaskStore>((set) => ({
  tasks: [],
- onSearch: (query: string) => set(({ tasks }) => ({ tasks: tasks.filter((t) => t.title.toLowerCase().includes(query.toLowerCase())) })),
- addTask: (task: Task) => set(({ tasks }) => ({ tasks: [...tasks, task] })),
- removeTask: (id: string) => set(({ tasks }) => ({ tasks: tasks.filter((t) => t.id !== id) })),
- updateTask: (task: Task) => set(({ tasks }) => ({ tasks: tasks.map((t) => (t.id === task.id ? task : t)) })),
+ onSearch: (query: string) =>
+  set(({ tasks }) => ({
+   tasks: tasks.filter((t) =>
+    t.title.toLowerCase().includes(query.toLowerCase())
+   ),
+  })),
+ addTask: (task: TaskProps) =>
+  set(({ tasks }) => ({ tasks: [...tasks, task] })),
+ removeTask: (id: string) =>
+  set(({ tasks }) => ({ tasks: tasks.filter((t) => t.id !== id) })),
+ updateTask: (task: TaskProps) =>
+  set(({ tasks }) => ({
+   tasks: tasks.map((t) => (t.id === task.id ? task : t)),
+  })),
 }));
-
-

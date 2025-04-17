@@ -10,6 +10,7 @@ export function Input({ placeholder,onChangeText,value }: Props) {
     placeholderTextColor={"#808080"}
     onChangeText={onChangeText}
     value={value}
+    keyboardType="email-address"
    />
   </View>
  );

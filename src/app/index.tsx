@@ -1,47 +1,35 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-
-import { SafeAreaView } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import React, { useEffect, useRef, useState } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
- FlatList,
- KeyboardAvoidingView,
- StatusBar,
- Text,
- View,
-} from "react-native";
+import { FlatList, StatusBar, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { TaskProps, useTaskStore } from "@/store/task";
 
 import "../../global.css";
 
+import BottomSheetComponent from "@/components/BottomSheetComponent";
+import EmptyList from "@/components/EmptyList";
 import { Header } from "@/components/Header";
 import Search from "@/components/Search";
 import { Task } from "@/components/Task";
-import TaskForm from "@/components/TaskForm";
-import BottomSheetComponent from "@/components/BottomSheetComponent";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 export default function App() {
- type taskProps = {
-  id: string;
-  title: string;
-  subtitle: string;
-  isChecked: boolean;
-  onPress: () => void;
- };
- type TaskFormProps = {
-  onPress: (id: string) => void;
- };
-
- const [tasks, setTasks] = useState<taskProps[]>([]);
+ const { tasks, removeTask } = useTaskStore();
  const [searchQuery, setSearchQuery] = useState<string>("");
+ const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
 
  useEffect(() => {
   const loadTasks = async () => {
    try {
     const storedTasks = await AsyncStorage.getItem("@tasks");
     if (storedTasks) {
-     setTasks(JSON.parse(storedTasks));
+     const parsedTasks = JSON.parse(storedTasks);
+     parsedTasks.forEach((task: TaskProps) => {
+      useTaskStore.getState().addTask(task);
+     });
     }
    } catch (error) {
     console.error("Failed to load tasks:", error);
@@ -61,19 +49,19 @@ export default function App() {
   saveTasks();
  }, [tasks]);
 
- const onSearch = (query: string) => {
-  const filteredTasks = tasks.filter((task) =>
-   task.title.toLowerCase().includes(query.toLowerCase())
-  );
-  setTasks(filteredTasks);
- };
-
  useEffect(() => {
-  onSearch(searchQuery);
- }, [searchQuery]);
+  if (searchQuery === "") {
+   setFilteredTasks(tasks);
+  } else {
+   const filtered = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+   );
+   setFilteredTasks(filtered);
+  }
+ }, [searchQuery, tasks]);
 
- const bottomSheetRef = useRef<BottomSheet>(null);
- const handleClose = () => {
+ const handleBottomSheetOpen = () => {
+  const bottomSheetRef = useRef<BottomSheet>(null);
   bottomSheetRef.current?.expand();
  };
 
@@ -90,31 +78,31 @@ export default function App() {
      headerSubtitle="Organize seu dia !!"
      initialIcon="tasks"
      lastIcon="pencil-alt"
-     onPress={() => handleClose()}
+     onPress={handleBottomSheetOpen}
     />
+
     <Search
      placeholder="Buscar tarefa ..."
-     onChangeText={(text) => setSearchQuery(text)}
+     onChangeText={setSearchQuery}
      value={searchQuery}
     />
+
     <View className="flex-1 m-4">
      <FlatList
-      data={[...tasks].reverse()}
+      data={[...filteredTasks].reverse()}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }: { item: taskProps }) => (
+      renderItem={({ item }: { item: TaskProps }) => (
        <Task
         id={item.id}
         title={item.title}
         subtitle={item.subtitle}
         lastIcon="trash-alt"
-        onPress={() => setTasks(tasks.filter((task) => task.id !== item.id))}
+        onPress={() => removeTask(item.id)}
        />
       )}
-      ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // gap horizontal
+      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => (
-       <Text className="text-center">Não há tarefas cadastradas</Text>
-      )}
+      ListEmptyComponent={() => <EmptyList />}
      />
     </View>
     <BottomSheetComponent />
