@@ -20,6 +20,7 @@ export default function App() {
  const { tasks, removeTask } = useTaskStore();
  const [searchQuery, setSearchQuery] = useState<string>("");
  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
+ const [isSearchVisible, setIsSearchVisible] = useState(false);
 
  useEffect(() => {
   const loadTasks = async () => {
@@ -78,14 +79,18 @@ export default function App() {
      headerSubtitle="Organize seu dia !!"
      initialIcon="tasks"
      lastIcon="pencil-alt"
+     filterIcon="filter"
      onPress={handleBottomSheetOpen}
+     onFilterPress={() => setIsSearchVisible(!isSearchVisible)}
     />
 
-    <Search
-     placeholder="Buscar tarefa ..."
-     onChangeText={setSearchQuery}
-     value={searchQuery}
-    />
+    {isSearchVisible && (
+     <Search
+      placeholder="Buscar tarefa ..."
+      onChangeText={setSearchQuery}
+      value={searchQuery}
+     />
+    )}
 
     <View className="flex-1 m-4">
      <FlatList
