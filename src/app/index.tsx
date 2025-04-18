@@ -24,23 +24,6 @@ export default function App() {
  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
  useEffect(() => {
-  const loadTasks = async () => {
-   try {
-    const storedTasks = await AsyncStorage.getItem("@tasks");
-    if (storedTasks) {
-     const parsedTasks = JSON.parse(storedTasks);
-     parsedTasks.forEach((task: TaskProps) => {
-      useTaskStore.getState().addTask(task);
-     });
-    }
-   } catch (error) {
-    console.error("Failed to load tasks:", error);
-   }
-  };
-  loadTasks();
- }, []);
-
- useEffect(() => {
   const saveTasks = async () => {
    try {
     await AsyncStorage.setItem("@tasks", JSON.stringify(tasks));
