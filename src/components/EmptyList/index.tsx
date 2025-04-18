@@ -1,15 +1,21 @@
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { View, Text } from "react-native";
 
-export default function EmptyList() {
+export  function EmptyList() {
  return (
-  <View className="flex-1 flex-row justify-center items-center gap-4  p-4 rounded-2xl">
-   <Ionicons name="warning-outline" size={50} color="black" />
+  <View className="flex-1 justify-center items-center gap-4  p-4 rounded-2xl">
+   <MaterialCommunityIcons
+    name="clipboard-text-off-outline"
+    size={70}
+    color="black"
+   />
    <View className="gap-2 justify-center">
-    <Text className="font-bold">Nenhuma tarefa cadastrada !!</Text>
+    <Text className="font-bold">Você ainda não tem tarefas cadastradas !!</Text>
     <View className="flex-row gap-4 items-center">
-     <Text className="font-medium">Cadastre uma tarefa !!</Text>
-     <FontAwesome5 name="pencil-alt" size={22} color="black" />
+     <Text className="font-medium">
+      Crie tarefas e organize seus itens a fazer !!
+     </Text>
+     <MaterialCommunityIcons name="clipboard-edit-outline" size={30} color="black" />
     </View>
    </View>
   </View>

@@ -1,50 +1,59 @@
-import { TaskProps } from "@/store/task";
+import { TaskProps, useTaskStore } from "@/store/task";
 import { FontAwesome5 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Checkbox from "expo-checkbox";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { TaskPros } from "./task.d";
 
 export function Task({ id, title, subtitle, lastIcon, onPress }: TaskPros) {
  const [isChecked, setChecked] = useState(false);
+ const { updateTask } = useTaskStore();
 
+ // Load task status from AsyncStorage
  useEffect(() => {
   const loadTaskStatus = async () => {
    try {
     const storedTasks = await AsyncStorage.getItem("@tasks");
-    if (storedTasks) {
-     const allTasks = JSON.parse(storedTasks);
-     const currentTask = allTasks.find((task: TaskProps) => task.id === id);
-     if (currentTask) {
-      setChecked(currentTask.isCompleted);
-     }
+    if (!storedTasks) return;
+
+    const allTasks = JSON.parse(storedTasks);
+    const currentTask = allTasks.find((task: TaskProps) => task.id === id);
+
+    if (currentTask) {
+     setChecked(currentTask.isCompleted);
     }
    } catch (error) {
     console.error("Failed to load task status:", error);
    }
   };
+
   loadTaskStatus();
  }, [id]);
 
- async function handleCompleteStatus(id: string) {
+ // Handle checkbox toggle with useCallback for better performance
+ const handleCompleteStatus = useCallback(async () => {
   try {
    const storedTasks = await AsyncStorage.getItem("@tasks");
-   if (storedTasks) {
-    const allTasks = JSON.parse(storedTasks);
-    const updatedTasks = allTasks.map((task: TaskProps) => {
-     if (task.id === id) {
-      return { ...task, isCompleted: !task.isCompleted };
-     }
-     return task;
-    });
-    await AsyncStorage.setItem("@tasks", JSON.stringify(updatedTasks));
-    setChecked(!isChecked);
-   }
+   if (!storedTasks) return;
+
+   const allTasks = JSON.parse(storedTasks);
+   const updatedTasks = allTasks.map((task: TaskProps) => {
+    if (task.id === id) {
+     const updatedTask = { ...task, isCompleted: !task.isCompleted };
+     // Update global state
+     updateTask(updatedTask);
+     return updatedTask;
+    }
+    return task;
+   });
+
+   await AsyncStorage.setItem("@tasks", JSON.stringify(updatedTasks));
+   setChecked((prev) => !prev);
   } catch (error) {
    console.error("Failed to update task status:", error);
   }
- }
+ }, [id, updateTask]);
 
  return (
   <View className="px-4 py-4 w-full flex-row items-center justify-between bg-teal-600 rounded-lg ">
@@ -52,7 +61,7 @@ export function Task({ id, title, subtitle, lastIcon, onPress }: TaskPros) {
     <Checkbox
      className="mr-2"
      value={isChecked}
-     onValueChange={() => handleCompleteStatus(id)}
+     onValueChange={handleCompleteStatus}
      color={isChecked ? "#22C55E" : "#134E4A"}
     />
    </View>

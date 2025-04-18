@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 
 import TaskForm from "@/components/TaskForm";
 
-export default function BottomSheetComponent() {
+export  function BottomSheetComponent() {
  const { isOpen, onClose } = useBottomSheetStore();
  const bottomSheetRef = useRef<BottomSheet>(null);
  const snapPoints = useMemo(() => ["68%"], []);

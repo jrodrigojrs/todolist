@@ -1,4 +1,4 @@
-import { Feather, FontAwesome5 } from "@expo/vector-icons";
+import { Feather, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 import { HeaderPros } from "./header";
 
@@ -8,6 +8,8 @@ export function Header({
  headerTitle,
  headerSubtitle,
  initialIcon,
+ deleteIcon,
+ onDeletePress,
  lastIcon,
  filterIcon,
  onFilterPress,
@@ -27,13 +29,18 @@ export function Header({
    </View>
 
    <View className="flex-row gap-4">
+    {deleteIcon && (
+     <TouchableOpacity onPress={onDeletePress} activeOpacity={0.7}>
+      <MaterialCommunityIcons name={deleteIcon} size={24} color="black" />
+     </TouchableOpacity>
+    )}
     {filterIcon && (
      <TouchableOpacity onPress={onFilterPress} activeOpacity={0.7}>
       <Feather name={filterIcon} size={24} color="black" />
      </TouchableOpacity>
     )}
     <TouchableOpacity onPress={handleBottomSheetOpen} activeOpacity={0.7}>
-     {lastIcon && <FontAwesome5 name={lastIcon} size={24} color="black" />}
+     {lastIcon && <MaterialCommunityIcons name={lastIcon} size={24} color="black" />}
     </TouchableOpacity>
    </View>
   </View>

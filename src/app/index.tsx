@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FlatList, StatusBar, View } from "react-native";
+import { Alert, FlatList, StatusBar, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,15 +9,16 @@ import { TaskProps, useTaskStore } from "@/store/task";
 
 import "../../global.css";
 
-import BottomSheetComponent from "@/components/BottomSheetComponent";
-import EmptyList from "@/components/EmptyList";
+import { BottomSheetComponent } from "@/components/BottomSheetComponent";
+import { EmptyList } from "@/components/EmptyList";
 import { Header } from "@/components/Header";
-import Search from "@/components/Search";
+import { ScorePanel } from "@/components/scorePanel";
+import { Search } from "@/components/Search";
 import { Task } from "@/components/Task";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 export default function App() {
- const { tasks, removeTask } = useTaskStore();
+ const { tasks, removeTask, removeAllCompletedTasks } = useTaskStore();
  const [searchQuery, setSearchQuery] = useState<string>("");
  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
  const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -66,6 +67,31 @@ export default function App() {
   bottomSheetRef.current?.expand();
  };
 
+ const handleDeleteCompletedTasks = () => {
+  const completedTasksCount = tasks.filter((task) => task.isCompleted).length;
+
+  if (completedTasksCount === 0) {
+   Alert.alert("Aviso", "Não há tarefas concluídas para excluir.");
+   return;
+  }
+
+  Alert.alert(
+   "Confirmar exclusão",
+   `Deseja realmente excluir todas as ${completedTasksCount} tarefas concluídas?`,
+   [
+    {
+     text: "Cancelar",
+     style: "cancel",
+    },
+    {
+     text: "Sim, excluir",
+     onPress: () => removeAllCompletedTasks(),
+     style: "destructive",
+    },
+   ]
+  );
+ };
+
  return (
   <GestureHandlerRootView className="flex-1">
    <SafeAreaView className="flex-1 bg-teal-100">
@@ -78,11 +104,14 @@ export default function App() {
      headerTitle="Lista de Tarefas"
      headerSubtitle="Organize seu dia !!"
      initialIcon="tasks"
-     lastIcon="pencil-alt"
+     lastIcon="clipboard-edit-outline"
+     deleteIcon="delete-sweep-outline"
      filterIcon="filter"
+     onDeletePress={handleDeleteCompletedTasks}
      onPress={handleBottomSheetOpen}
      onFilterPress={() => setIsSearchVisible(!isSearchVisible)}
     />
+    <ScorePanel />
 
     {isSearchVisible && (
      <Search

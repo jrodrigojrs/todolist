@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
 import { searchProps } from "./search";
 
-export default function Search({ placeholder, ...rest }: searchProps) {
+export  function Search({ placeholder, ...rest }: searchProps) {
 
  return (
   <View className="flex-row justify-center items-center border-2 border-gray-400 rounded-lg mx-4 gap-2 px-3">

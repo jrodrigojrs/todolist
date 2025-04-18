@@ -9,7 +9,7 @@ import { TaskProps, useTaskStore } from "@/store/task";
 export default function TaskForm() {
  const [title, setTitle] = useState<string>("");
  const [subtitle, setSubtitle] = useState<string>("");
- const { addTask } = useTaskStore();
+ const { addTask, tasks } = useTaskStore();
  const { onClose } = useBottomSheetStore();
 
  async function handleAddTask(title: string, subtitle: string) {
@@ -20,13 +20,43 @@ export default function TaskForm() {
     setSubtitle("");
     return;
    }
-   const newData: TaskProps = {
-    id: String(new Date().getTime()),
-    title,
-    subtitle,
-    isCompleted: false,
-   };
-   addTask(newData);
+
+   // Verificar se já existe uma tarefa com o mesmo título
+   const titleExists = tasks.some(
+    (task) => task.title.toLowerCase() === title.toLowerCase()
+   );
+
+   if (titleExists) {
+    Alert.alert("Atenção !!", "Já existe uma tarefa com este título!");
+    return;
+   }
+
+   // Gerar um ID único
+   const newId = String(new Date().getTime());
+
+   // Verificar se por algum motivo o ID já existe (extremamente improvável)
+   const idExists = tasks.some((task) => task.id === newId);
+
+   if (idExists) {
+    // Se por algum milagre o ID já existir, adiciona um número aleatório
+    const uniqueId = `${newId}-${Math.floor(Math.random() * 1000)}`;
+    const newData: TaskProps = {
+     id: uniqueId,
+     title,
+     subtitle,
+     isCompleted: false,
+    };
+    addTask(newData);
+   } else {
+    const newData: TaskProps = {
+     id: newId,
+     title,
+     subtitle,
+     isCompleted: false,
+    };
+    addTask(newData);
+   }
+
    setTitle("");
    setSubtitle("");
    onClose();

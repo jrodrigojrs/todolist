@@ -13,6 +13,7 @@ export type TaskStore = {
  addTask: (task: TaskProps) => void;
  removeTask: (id: string) => void;
  updateTask: (task: TaskProps) => void;
+ removeAllCompletedTasks: () => void;
 };
 
 export const useTaskStore = create<TaskStore>((set) => ({
@@ -27,6 +28,8 @@ export const useTaskStore = create<TaskStore>((set) => ({
   set(({ tasks }) => ({ tasks: [...tasks, task] })),
  removeTask: (id: string) =>
   set(({ tasks }) => ({ tasks: tasks.filter((t) => t.id !== id) })),
+ removeAllCompletedTasks: () =>
+  set(({ tasks }) => ({ tasks: tasks.filter((t) => !t.isCompleted) })),
  updateTask: (task: TaskProps) =>
   set(({ tasks }) => ({
    tasks: tasks.map((t) => (t.id === task.id ? task : t)),
