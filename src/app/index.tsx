@@ -12,7 +12,7 @@ import "../../global.css";
 import { BottomSheetComponent } from "@/components/BottomSheetComponent";
 import { EmptyList } from "@/components/EmptyList";
 import { Header } from "@/components/Header";
-import { ScorePanel } from "@/components/scorePanel";
+import { ScorePanel } from "@/components/ScorePanel";
 import { Search } from "@/components/Search";
 import { Task } from "@/components/Task";
 import BottomSheet from "@gorhom/bottom-sheet";
