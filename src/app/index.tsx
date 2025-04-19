@@ -18,10 +18,18 @@ import { Task } from "@/components/Task";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 export default function App() {
- const { tasks, removeTask, removeAllCompletedTasks } = useTaskStore();
+ const {
+  tasks,
+  removeTask,
+  removeAllCompletedTasks,
+  toggleSelectAll,
+  selectedTasks,
+  markAllTasksAsCompleted,
+ } = useTaskStore();
  const [searchQuery, setSearchQuery] = useState<string>("");
  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
  const [isSearchVisible, setIsSearchVisible] = useState(false);
+ const [refreshKey, setRefreshKey] = useState(0);
 
  useEffect(() => {
   const saveTasks = async () => {
@@ -75,6 +83,57 @@ export default function App() {
   );
  };
 
+ const handleSelectAll = () => {
+  const isSelecting = selectedTasks.length === 0;
+  const action = isSelecting ? "selecionar" : "desselecionar";
+
+  Alert.alert(
+   "Confirmar seleção",
+   `Deseja realmente ${action} todas as ${tasks.length} tarefas?`,
+   [
+    {
+     text: "Cancelar",
+     style: "cancel",
+    },
+    {
+     text: `Sim, ${action}`,
+     onPress: () => toggleSelectAll(),
+    },
+   ]
+  );
+ };
+
+ const handleMarkAllAsCompleted = () => {
+  const uncompletedTasksCount = tasks.filter(
+   (task) => !task.isCompleted
+  ).length;
+
+  if (uncompletedTasksCount === 0) {
+   Alert.alert("Aviso", "Todas as tarefas já estão concluídas.");
+   return;
+  }
+
+  Alert.alert(
+   "Confirmar conclusão",
+   `Deseja realmente marcar todas as ${uncompletedTasksCount} tarefas pendentes como concluídas?`,
+   [
+    {
+     text: "Cancelar",
+     style: "cancel",
+    },
+    {
+     text: "Sim, concluir todas",
+     onPress: () => {
+      markAllTasksAsCompleted();
+      setTimeout(() => {
+       setRefreshKey((prevKey) => prevKey + 1);
+      }, 100);
+     },
+    },
+   ]
+  );
+ };
+
  return (
   <GestureHandlerRootView className="flex-1">
    <SafeAreaView className="flex-1 bg-teal-100">
@@ -88,11 +147,13 @@ export default function App() {
      headerSubtitle="Organize seu dia !!"
      initialIcon="tasks"
      lastIcon="clipboard-edit-outline"
-     deleteIcon="delete-sweep-outline"
+     deleteAllIcon="delete-sweep-outline"
+     selectAllIcon="check-all"
      filterIcon="filter"
      onDeletePress={handleDeleteCompletedTasks}
      onPress={handleBottomSheetOpen}
      onFilterPress={() => setIsSearchVisible(!isSearchVisible)}
+     onSelectAllPress={handleMarkAllAsCompleted}
     />
     <ScorePanel />
 
@@ -106,6 +167,7 @@ export default function App() {
 
     <View className="flex-1 m-4">
      <FlatList
+      key={refreshKey}
       data={[...filteredTasks].reverse()}
       keyExtractor={(item) => item.id}
       renderItem={({ item }: { item: TaskProps }) => (

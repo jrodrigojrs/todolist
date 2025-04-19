@@ -8,7 +8,7 @@ import { TaskPros } from "./task.d";
 
 export function Task({ id, title, subtitle, lastIcon, onPress }: TaskPros) {
  const [isChecked, setChecked] = useState(false);
- const { updateTask } = useTaskStore();
+ const { updateTask, selectedTasks, toggleTaskSelection } = useTaskStore();
 
  // Load task status from AsyncStorage
  useEffect(() => {
@@ -55,8 +55,14 @@ export function Task({ id, title, subtitle, lastIcon, onPress }: TaskPros) {
   }
  }, [id, updateTask]);
 
+ const isSelected = selectedTasks.includes(id);
+
  return (
-  <View className="px-4 py-4 w-full flex-row items-center justify-between bg-teal-600 rounded-lg ">
+  <View
+   className={`px-4 py-4 w-full flex-row items-center justify-between bg-teal-600 rounded-lg ${
+    isSelected ? "border-2 border-teal-300" : ""
+   }`}
+  >
    <View className="flex-row items-center">
     <Checkbox
      className="mr-2"

@@ -6,8 +6,10 @@ type HeaderPros = TouchableOpacityProps & {
  headerSubtitle?: string;
  initialIcon?: keyof typeof FontAwesome5.glyphMap;
  lastIcon: keyof typeof MaterialCommunityIcons.glyphMap;
- deleteIcon?: keyof typeof MaterialCommunityIcons.glyphMap;
+ selectAllIcon?: keyof typeof MaterialCommunityIcons.glyphMap;
+ deleteAllIcon?: keyof typeof MaterialCommunityIcons.glyphMap;
  filterIcon?: keyof typeof Feather.glyphMap;
  onFilterPress?: () => void;
  onDeletePress?: () => void;
+ onSelectAllPress?: () => void;
 };

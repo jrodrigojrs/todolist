@@ -8,7 +8,9 @@ export function Header({
  headerTitle,
  headerSubtitle,
  initialIcon,
- deleteIcon,
+ deleteAllIcon,
+ selectAllIcon,
+ onSelectAllPress,
  onDeletePress,
  lastIcon,
  filterIcon,
@@ -21,7 +23,7 @@ export function Header({
  }
 
  return (
-  <View className="px-4 py-4 flex-row items-center justify-between bg-teal-600 my-4 gap-4">
+  <View className="px-4 py-4 flex-row items-center justify-between bg-teal-600 my-2 gap-4">
    {initialIcon && <FontAwesome5 name={initialIcon} size={24} color="black" />}
    <View className="flex-1 self-start px-4">
     <Text className="font-medium text-md">{headerTitle}</Text>
@@ -29,9 +31,14 @@ export function Header({
    </View>
 
    <View className="flex-row gap-4">
-    {deleteIcon && (
+    {selectAllIcon && (
+     <TouchableOpacity onPress={onSelectAllPress} activeOpacity={0.7}>
+      <MaterialCommunityIcons name={selectAllIcon} size={24} color="black" />
+     </TouchableOpacity>
+    )}
+    {deleteAllIcon && (
      <TouchableOpacity onPress={onDeletePress} activeOpacity={0.7}>
-      <MaterialCommunityIcons name={deleteIcon} size={24} color="black" />
+      <MaterialCommunityIcons name={deleteAllIcon} size={24} color="black" />
      </TouchableOpacity>
     )}
     {filterIcon && (
