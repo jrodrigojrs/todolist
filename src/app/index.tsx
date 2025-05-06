@@ -10,6 +10,7 @@ import { TaskProps, useTaskStore } from "@/store/task";
 import "../../global.css";
 
 import { BottomSheetComponent } from "@/components/BottomSheetComponent";
+import { EmptyFilterList } from "@/components/EmptyFilterList";
 import { EmptyList } from "@/components/EmptyList";
 import { Header } from "@/components/Header";
 import { ScorePanel } from "@/components/ScorePanel";
@@ -181,7 +182,13 @@ export default function App() {
       )}
       ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => <EmptyList />}
+      ListEmptyComponent={() =>
+       filteredTasks.length === 0 && searchQuery !== "" ? (
+        <EmptyFilterList />
+       ) : (
+        <EmptyList />
+       )
+      }
      />
     </View>
     <BottomSheetComponent />
